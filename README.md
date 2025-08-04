@@ -10,10 +10,10 @@ chmod +x install.sh
 ./install
 ```
 
-**Example**
+**Example** <br />
 ![](https://github.com/Krak9n/ranni/blob/main/gif/output.gif)
 
-**Usage**
+**Usage** <br />
 Currently supports only image formats provided by [image](https://docs.rs/image/latest/image/index.html)
 
 To execute just run:
