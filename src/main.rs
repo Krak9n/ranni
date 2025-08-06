@@ -5,25 +5,31 @@
 use std::fs;
 use std::fs::File;
 use std::env;
-use std::error::Error;
 use std::path::Path;
 use std::process;
 //use std::error::Error;
 use anyhow::Result;
 
-use opencv::videoio;
-use opencv::videoio::*;
-use opencv::videoio::{VideoCapture};
-use opencv::prelude::VideoCaptureTraitConst;
-use opencv::core::Size_;
-use opencv::imgcodecs::imread;
-use opencv::prelude::MatTraitConst;
-use opencv::core::Mat;
-use opencv::core::Vec3b;
+use image::io::Reader;
+use image::{GenericImageView};
+
+extern crate ffmpeg_next as ffmpeg;
+use ffmpeg::format::{input, Pixel};
+use ffmpeg::media::Type;
+use ffmpeg::software::scaling::{context::Context, flag::Flags};
+use ffmpeg::util::frame::video::Video;
+use ffmpeg::format;
+
+struct Args {
+  // input file
+  i: String,
+  // scaling
+  scale: u32,
+}
 
 //#![feature(str_as_str)]
 // user has to insert the full path
-pub fn main() -> Result<(), Box<dyn std::error::Error>>{
+pub fn main() -> Result<(), ffmpeg::Error> {
 
   // so, the command so far has to be smth like
   // ranni ~/file.txt
@@ -33,39 +39,18 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>>{
   
   bad_request(&args);
 
-  // terminal size
-  //terminal_get();
+  //let path = &args[1].clone();
+  //video_to_ascii(path);
 
-  /* FOR VIDEO */
-  video_inf(&args);
-  
-  //let scale = args[2].parse::<i32>().unwrap();
-  
-  /* FOR IMAGES */
   // printing func
-  //prints(scale);
-
-  /*
-  let mut file = File::create(&args[3].clone());
-  file.write_all(prints(scale)).except("failed to write");
-
-  // printout the result 
-  // after saving the file
-  if Path::new(&file).exists() {
-      match fs::read_to_string(file) {
-          Ok(content) => println!("{}", content),
-          Err(err) => eprintln!("error reading file: {}", err),
-      }
-  } else {
-      eprintln!("file does not exist: {}", file_path);
-  }
-  */
+  let scale = args[2].parse::<u32>().unwrap();
+  prints(scale);
 
   Ok(())
 }
 
-fn get_str_ascii(intent: u8)-> &'static str {
-    let index = intent/32;
+fn get_str_ascii(intent :u8)-> &'static str {
+    let index = intent / 32;
     let symbols = [" ","!", "^", ".",",","-","~","+","=","@"];
     return symbols[index as usize];
 }
@@ -78,82 +63,91 @@ fn bad_request(args: &Vec<String>) {
   }
 }
 
-pub fn prints(scale: i32) -> Result<(), Box<dyn std::error::Error>> {
+/* IMAGES TO ASCII */
+// ---------------
+fn get_image_dimensions(file_path: &str) -> Result<(u32, u32)> {
   let args: Vec<String> = env::args()
     .collect();
-   
-  let path: &str = &args[1].clone();
-  let img = imread(path, opencv::imgcodecs::IMREAD_COLOR)?;
-  let size = img.size()?;
 
-  let width = size.width;
-  let height = size.height;
-  
+  let path = Path::new(&args[1]);
+  let reader = Reader::open(path).expect("FILE NOT FOUND");
+  let dimensions = reader.into_dimensions()?;
+  Ok(dimensions)
+}
+
+pub fn prints(scale: u32) -> Result<(), Box<dyn std::error::Error>> {
+  let args: Vec<String> = env::args()
+    .collect();
+
+  let Ok((width, height)) = get_image_dimensions(&args[1]) else { todo!() };
+  let img = image::open(&args[1]).unwrap();
+
   // make converting logic
   for y in 0..height {
     for x in 0..width {
         if y % (scale * 2) == 0 && x % scale == 0 {
-            let pix = *img.at_2d::<Vec3b>(y, x)?; // return if error
+
+            let pix = img.get_pixel(x,y);
+
+            let mut intent = pix[0]/3 + pix[1]/3 + pix[2]/3;
             
-            let mut intent = ((pix[0] as u16 + pix[1] as u16 + pix[2] as u16) / 3).try_into().unwrap();
-            
-            // problem with intensity. 
-            // cannot make it working
-            // each time i store pixels in Vec4 
-            // program stops working
-            /*
-            if pix[3] ==0{
+            if pix[3] == 0 {
                 intent = 0;
             }
-            */
-            
-            print!("{}", get_str_ascii(intent));
+            print!("{}",get_str_ascii(intent));
         } 
     }
-    if y % (scale*2) == 0 {
+    if y % (scale * 2) == 0 {
         println!("");
     }
   }
   Ok(())
-}
 
-pub fn video_inf(args: &Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
+}
+// ------------------
+
+/* VIDEO TO ASCII */
+// ---------------
+pub fn video_to_ascii(path: &str) -> Result<()> {
+   let args: Vec<String> = env::args()
+    .collect();
+
+  ffmpeg::init().unwrap();
+  fs::create_dir("./images");
+
+  // ffmpeg command for extracting frames
+  // ffmpeg -i myvideo.mp4 img%03d.jpg
+  let mut video_path: &str = &args[1].clone();
+  let mut input = format::input(&Path::new(video_path))
+      .map_err(|e| anyhow::anyhow!("failed to open input file: {}", e))?;
+
+  let stream = input
+      .streams()
+      .best(ffmpeg::media::Type::Video)
+      .ok_or(anyhow::anyhow!("no video stream found"))?;
   
-  let path: &str = &args[1].clone();
-  let mut video = videoio::VideoCapture::from_file(path, videoio::CAP_ANY)?;
-  
-  if !video.is_opened()? {
-    panic!("unable to open default camera!");
+  let stream_index = stream.index();
+
+  let context_decoder = ffmpeg::codec::context::Context::from_parameters(stream.parameters())
+      .map_err(|e| anyhow::anyhow!("failed to create decoder context: {}", e))?;
+  let mut decoder = context_decoder.decoder()
+      .video()
+      .map_err(|e| anyhow::anyhow!("failed to create video decoder: {}", e))?;
+
+  let mut frame_index = 0;
+  // Decode frames
+  for (stream, packet) in input.packets() {
+      if stream.index() == stream_index {
+          decoder.send_packet(&packet)
+              .map_err(|e| anyhow::anyhow!("failed to send packet to decoder: {}", e))?;
+          
+          println!("extracting frame {}", frame_index);
+          //fs::rename(stream, "images")?;
+          frame_index += 1;
+
+      }
   }
 
-  //fs::remove_dir("./images/")?;
-
-  let width = video.get(CAP_PROP_FRAME_WIDTH)?.round() as i32;
-  let height = video.get(CAP_PROP_FRAME_HEIGHT)?.round() as i32;
-  let frames = video.get(CAP_PROP_FRAME_COUNT)?.round();
-
-  let size = width as i32 + height as i32;
-
-  println!("frame width: {}", video.get(CAP_PROP_FRAME_WIDTH)?.round()); //Frame width:1280
-  println!("frame height: {}", video.get(CAP_PROP_FRAME_HEIGHT)?.round()); //Frame height720
-  println!("fps: {}", video.get(CAP_PROP_FRAME_COUNT)?.round()); //Frame height720  // at the end
-
-  let fourcc = videoio::VideoWriter::fourcc('m', 'p', '4', 'v')?; // mpeg4 codec
-  //let fourcc = videoio::VideoWriter::fourcc('X', '2', '6', '4')?; //m1 x264=>H.264
-  //let fourcc = video.get(CAP_PROP_FOURCC)?.round();
-  
-
-  // try to implement later smth like saving depending
-  // on the args last name argument
-  // same with the codec
-  fs::create_dir("./images");
-  let mut out = VideoWriter::new_def("./images/output.mp4", fourcc, frames, Size_::new(width, height));
-  
-  let current = 0;
-
-
-  fs::remove_dir("./images/")?;
-
-  video.release()?;
+  //fs::remove_dir("images/");
   Ok(())
 }
