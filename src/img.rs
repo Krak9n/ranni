@@ -16,13 +16,13 @@ impl IMG<'_> {
     let args: Vec<String> = env::args()
       .collect();
 
-    let path = Path::new(&args[1]);
+    let path = Path::new(&args[2]);
     let reader = ImageReader::open(path).expect("FILE NOT FOUND");
     let dimensions = reader.into_dimensions()?;
     Ok(dimensions)
   }
 
-  fn get_str_ascii(intent :u8)-> &'static str {
+  fn get_str_ascii(intent: u8) -> &'static str {
       let index = intent / 32;
       let symbols = [" ","!", "^", ".",",","-","~","+","=","@"];
       return symbols[index as usize];
@@ -32,8 +32,8 @@ impl IMG<'_> {
     let args: Vec<String> = env::args()
       .collect();
 
-    let Ok((width, height)) = Self::get_image_dimensions(&args[1]) else { todo!() };
-    let img = image::open(&args[1]).unwrap();
+    let Ok((width, height)) = Self::get_image_dimensions(&args[2]) else { todo!() };
+    let img = image::open(&args[2]).unwrap();
 
     // make converting logic
     for y in 0..height {
@@ -63,8 +63,6 @@ impl IMG<'_> {
       background: "200200200",
     };
     
-    
-
   }
 
 }
