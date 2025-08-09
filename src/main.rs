@@ -41,12 +41,6 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
   Ok(())
 }
 
-fn get_str_ascii(intent :u8)-> &'static str {
-    let index = intent / 32;
-    let symbols = [" ","!", "^", ".",",","-","~","+","=","@"];
-    return symbols[index as usize];
-}
-
 // if printing doesnt containt filename
 fn bad_request(args: &Vec<String>) {
   if args.len() < 2 {
