@@ -24,7 +24,7 @@ in which second argument is the path to photo, and the third is the scale of pri
 + [] RGBA colors 
 + [] video to ascii
 + [] saving option
-+ [] more user friendly options for input
++ [x] more user friendly options for input
 
 **Used as reference**
 + [this](https://github.com/BrendanBetterman/Rust-Ascii-Art-Generator) amazing tutorial
