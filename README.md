@@ -16,15 +16,23 @@ chmod +x install.sh
 **Usage** <br />
 Currently supports only image formats provided by [image](https://docs.rs/image/latest/image/index.html)
 
+**!Deprecated video example!**
 To execute just run:
-`ranni ~/images/photo.png 6` <br />
-in which second argument is the path to photo, and the third is the scale of printing.
+`ranni -i ~/images/photo.png -s 6` <br />
+in which third argument is the path to image/video, and the fourth is the scale of printing. <br />
 
 **Small Roadmap**
 + [] RGBA colors 
 + [] video to ascii
-+ [] saving option
++ [x] saving option
 + [x] more user friendly options for input
+
+**If you want to save it for later**
+Just add standard flag `> filename.format`
+Example:
+```
+ranni -i ~/Downloads/love.png -s 6 > save.txt
+```
 
 **Used as reference**
 + [this](https://github.com/BrendanBetterman/Rust-Ascii-Art-Generator) amazing tutorial
