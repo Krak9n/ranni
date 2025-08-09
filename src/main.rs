@@ -1,11 +1,9 @@
-// every time when in development needed 
-// to change args amount on +1.
-
 #[warn(unused_imports)]
 use std::env;
 use std::process;
 //use std::error::Error;
 use anyhow::Result;
+use clap::Parser;
 
 pub mod img;
 //pub mod video;
@@ -13,11 +11,14 @@ pub mod img;
 
 // for better command line use
 // last one on the roadmap
+#[derive(Parser)]
 struct Args {
   // input file
+  #[arg(short = 'i', long = "input")]
   i: String,
   // scaling
-  scale: u32,
+  #[arg(short = 's', long = "scale")]
+  s: String,
 }
 
 //#![feature(str_as_str)]
@@ -31,11 +32,19 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     .collect();
   bad_request(&args);
 
-  //let path = &args[1].clone();
-  //video_to_ascii(path);
+  // input has to be indicate: -i path/file.format
+  /* HERE MUST ADD SOME SORT OF SWITCH FOR SCANNING WITH FFMPEG
+   * FILE FORMATS */
+  // scale has to indicate size: -s number
 
-  // printing func
-  let scale = args[2].parse::<u32>().unwrap();
+  let input = Args::parse();
+  
+  // -i = 1 // to code
+  // path = 2
+  // -s = 3 // to code
+  // scale = 4
+
+  let scale = args[4].parse::<u32>().unwrap();
   img::IMG::prints(scale);
 
   Ok(())
@@ -44,9 +53,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
 // if printing doesnt containt filename
 fn bad_request(args: &Vec<String>) {
   if args.len() < 2 {
-    println!("bad usage.\nplease insert a filename after the executable\n");
+    print!("bad usage.\nplease insert a filename after the executable\n");
     process::exit(3);
   }
 }
-
 
