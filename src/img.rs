@@ -1,16 +1,18 @@
 use std::path::Path;
-use std::fs;
+use std::error::Error;
 use std::env;
 
 use image::ImageReader;
 use image::{GenericImageView};
 
-struct IMG {}
+pub struct IMG<'a> {
+  background: &'a str,
+}
 
-impl IMG {
+impl IMG<'_> {
   /* IMAGES TO ASCII */
   // ---------------
-  fn get_image_dimensions(file_path: &str) -> Result<(u32, u32), E> {
+  fn get_image_dimensions(file_path: &str) -> Result<(u32, u32), Box<dyn Error>> {
     let args: Vec<String> = env::args()
       .collect();
 
@@ -18,6 +20,12 @@ impl IMG {
     let reader = ImageReader::open(path).expect("FILE NOT FOUND");
     let dimensions = reader.into_dimensions()?;
     Ok(dimensions)
+  }
+
+  fn get_str_ascii(intent :u8)-> &'static str {
+      let index = intent / 32;
+      let symbols = [" ","!", "^", ".",",","-","~","+","=","@"];
+      return symbols[index as usize];
   }
 
   pub fn prints(scale: u32) -> Result<(), Box<dyn std::error::Error>> {
@@ -39,7 +47,7 @@ impl IMG {
               if pix[3] == 0 {
                   intent = 0;
               }
-              print!("{}",get_str_ascii(intent));
+              print!("{}", Self::get_str_ascii(intent));
           } 
       }
       if y % (scale * 2) == 0 {
@@ -48,6 +56,15 @@ impl IMG {
     }
 
     Ok(())
+  }
+
+  fn get_to_rgba() {
+    let rgb = IMG {
+      background: "200200200",
+    };
+    
+    
+
   }
 
 }
