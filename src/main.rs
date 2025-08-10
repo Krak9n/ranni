@@ -6,8 +6,7 @@ use anyhow::Result;
 use clap::Parser;
 
 pub mod img;
-//pub mod video;
-//pub mod rgba;
+pub mod video;
 
 // for better command line use
 // last one on the roadmap
@@ -45,7 +44,10 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
   // scale = 4
 
   let scale = args[4].parse::<u32>().unwrap();
-  img::IMG::prints(scale);
+  
+  video::VID::saving();
+  video::VID::drawing(scale);
+  //img::IMG::prints(scale);
 
   Ok(())
 }
