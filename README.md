@@ -24,7 +24,6 @@ in which third argument is the path to image/video, and the fourth is the scale 
 **Small Roadmap**
 + [] RGBA colors 
 + [] video to ascii
-+ [x] saving option
 + [x] more user friendly options for input
 
 **If you want to save it for later**
