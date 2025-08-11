@@ -31,10 +31,6 @@ impl VID {
       let status = Command::new("ffmpeg")
           .arg("-i")
           .arg(video_path) 
-          .arg("-vf")
-          .arg("fps=1") 
-          .arg("-q:v")
-          .arg("2") 
           .arg(format!("{}/frame%04d.png", output_dir)) 
           .status()
           .expect("Failed to execute ffmpeg");
@@ -66,6 +62,7 @@ impl VID {
   }
 
   pub fn drawing(scale: u32) -> Result<(), Box<dyn std::error::Error>> {
+    Self::saving(); 
     let args: Vec<String> = env::args()
       .collect();
        
@@ -73,15 +70,14 @@ impl VID {
       // Part 3: get path and path str.
       let path = entry?.path();
       let path_str = path.to_str().unwrap();
-      println!("{}", path_str);
       let reader = ImageReader::open(path_str).expect("FILE NOT FOUND");
      
       // smth happens here
       let dimensions = reader.into_dimensions()?;
       let (width, height) = dimensions;
       
-      let img = image::open(&args[2]).unwrap();
-
+      let img = image::open(path_str).unwrap();
+      
       // make converting logic
       for y in 0..height {
         for x in 0..width {
@@ -101,8 +97,11 @@ impl VID {
           println!("");
         }
       }
-      } 
-    fs::remove_dir("frames");
+
+      print!("\x1B[2J\x1B[1;1H");
+
+    } 
+    fs::remove_dir_all("frames");
 
     Ok(())
   }
