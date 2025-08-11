@@ -45,9 +45,9 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
 
   let scale = args[4].parse::<u32>().unwrap();
   
-  video::VID::saving();
-  video::VID::drawing(scale);
-  //img::IMG::prints(scale);
+ // video::VID::saving();
+  //video::VID::drawing(scale);
+  img::IMG::prints(scale);
 
   Ok(())
 }
