@@ -1,6 +1,6 @@
 #!/bin/bash
 cargo install --path .
 cd example/
-ranni sakura.jpg 8
+ranni -t image -i example/sakura.jpg -s 8
 
-echo "\ninstalled successfully\n"
+echo "installed successfully"
