@@ -48,7 +48,7 @@ impl VID {
     let args: Vec<String> = env::args()
     .collect();   
     
-    let video_path = args[2].clone(); 
+    let video_path = args[4].clone(); 
     let output_dir = "frames"; 
 
     Self::extract_frames(&video_path, output_dir);
@@ -57,7 +57,7 @@ impl VID {
   
   fn get_str_ascii(intent: u8) -> &'static str {
       let index = intent / 32;
-      let symbols = [" ","!", "^", ".",",","-","~","+","=","@"];
+      let symbols = [" ","#","!","=","@","&","^","*"];
       return symbols[index as usize];
   }
 
@@ -101,7 +101,7 @@ impl VID {
       print!("\x1B[2J\x1B[1;1H");
 
     } 
-    fs::remove_dir_all("frames");
+    fs::remove_dir_all("frames/");
 
     Ok(())
   }
