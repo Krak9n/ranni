@@ -16,7 +16,7 @@ impl IMG<'_> {
     let args: Vec<String> = env::args()
       .collect();
 
-    let path = Path::new(&args[2]);
+    let path = Path::new(&args[4]);
     let reader = ImageReader::open(path).expect("FILE NOT FOUND");
     let dimensions = reader.into_dimensions()?;
     Ok(dimensions)
@@ -32,8 +32,8 @@ impl IMG<'_> {
     let args: Vec<String> = env::args()
       .collect();
 
-    let Ok((width, height)) = Self::get_image_dimensions(&args[2]) else { todo!() };
-    let img = image::open(&args[2]).unwrap();
+    let Ok((width, height)) = Self::get_image_dimensions(&args[4]) else { todo!() };
+    let img = image::open(&args[4]).unwrap();
 
     // make converting logic
     for y in 0..height {
@@ -58,6 +58,7 @@ impl IMG<'_> {
     Ok(())
   }
 
+  // doesnt work yet
   fn get_to_rgba() {
     let rgb = IMG {
       background: "200200200",
