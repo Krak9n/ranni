@@ -12,6 +12,10 @@ pub mod video;
 // last one on the roadmap
 #[derive(Parser)]
 struct Args {
+  // tell if it's a video
+  // or an image
+  #[arg(short = 't', long = "type")]
+  t: String,
   // input file
   #[arg(short = 'i', long = "input")]
   i: String,
@@ -24,33 +28,20 @@ struct Args {
 // user has to insert the full path
 pub fn main() -> Result<(), Box<dyn std::error::Error>> {
 
-  // so, the command so far has to be smth like
-  // ranni ~/file.txt
-  // otherwise gonna be an error with index out of bonds
   let args: Vec<String> = env::args()
     .collect();
   bad_request(&args);
 
-  // input has to be indicate: -i path/file.format
-  /* HERE MUST ADD SOME SORT OF SWITCH FOR SCANNING WITH FFMPEG
-   * FILE FORMATS */
-  // scale has to indicate size: -s number
-
   let input = Args::parse();
-  
-  // -i = 1 // to code
-  // path = 2
-  // -s = 3 // to code
-  // scale = 4
+  let scale = args[6].parse::<u32>().unwrap();
 
-  let scale = args[4].parse::<u32>().unwrap();
-
-  if args[2] == "png" {
+  if input.t == "image" {
     img::IMG::prints(scale);
-  } else {
-    video::VID::drawing(scale);
   }
-  //img::IMG::prints(scale);
+
+  if input.t == "video" {
+    video::VID::drawing(scale);
+  } 
 
   Ok(())
 }
