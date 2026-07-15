@@ -10,7 +10,7 @@ $ cargo install --path .
 ```
 
 ### Example 
-![](https://github.com/Krak9n/ranni/blob/main/gif/output.gif)
+![](https://github.com/Krak9n/ranni/blob/main/example/output.gif)
 
 ### Usage
 Supports only image formats provided by [image](https://docs.rs/image/latest/image/index.html), 
