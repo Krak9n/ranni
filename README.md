@@ -27,9 +27,9 @@ and video format by [ffmpeg_next](https://docs.rs/ffmpeg-next/latest/ffmpeg_next
 + [x] RGBA colors **(couldn't figure out)** 
 + [x] video to ascii 
 + [x] more user friendly options for input
-[] refactor
-[] add clippy support
-[] fix video processing
++ [] refactor
++ [] add clippy support
++ [] fix video processing
 
 ### Used as reference
 + [this amazing tutorial](https://github.com/BrendanBetterman/Rust-Ascii-Art-Generator)
