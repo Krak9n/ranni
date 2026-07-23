@@ -17,11 +17,12 @@ Supports only image formats provided by [image](https://docs.rs/image/latest/ima
 and video format by [ffmpeg_next](https://docs.rs/ffmpeg-next/latest/ffmpeg_next/index.html).
 
 ### Executing
-`$ ranni -t image -i ./example/sakura.jpg -s 6` <br />
-
--t: type of the input
--i: input path
--s: the scale of printing
+```bash
+$ ranni -t image -i ./example/sakura.jpg -s 6
+  -t: type of the input  
+  -i: input path  
+  -s: the scale of printing  
+```
 
 ### Roadmap
 + [x] RGBA colors **(couldn't figure out)** 
