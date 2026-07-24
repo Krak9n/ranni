@@ -1,4 +1,7 @@
+![](https://github.com/Krak9n/ranni/blob/main/examples/sakura.png)
 Small utility for converting images and videos into ASCII.
+
+Needs refactoring. Will be done in some time.
 
 ### Dependencies
 * cargo
@@ -8,9 +11,6 @@ Small utility for converting images and videos into ASCII.
 $ cd ranni
 $ cargo install --path .
 ```
-
-### Example 
-![](https://github.com/Krak9n/ranni/blob/main/example/output.gif)
 
 ### Usage
 Supports only image formats provided by [image](https://docs.rs/image/latest/image/index.html), 
