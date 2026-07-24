@@ -1,7 +1,8 @@
-![](https://github.com/Krak9n/ranni/blob/main/examples/sakura.png)
-Small utility for converting images and videos into ASCII.
+![](https://github.com/Krak9n/ranni/blob/main/examples/sakura.png)  
+  
+Small utility for converting images and videos into ASCII.  
 
-Needs refactoring. Will be done in some time.
+Code will be refactored in some time.  
 
 ### Dependencies
 * cargo
